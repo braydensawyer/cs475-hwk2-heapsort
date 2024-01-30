@@ -1,8 +1,8 @@
 /*
  * heapsort.c
  *
- *  Created on: Jul 1, 2013
- *      Author:
+ *  Created on: Jan 24, 2024
+ *      Author: Brayden Sawyer
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,12 +17,15 @@
  */
 void heapSort(Employee *A, int n)
 {
-	// TODO - BuildHeap on the heap
+	buildHeap(A, n);
 
-	// TODO - while n > 0:
-	// TODO - swap A[n-1] with A[0], since A[0] is the smallest number.
-	// TODO - A[n-1] now sorted in place, so decrement n
-	// TODO - Heapify the elements from A[0] up to A[n-1] (which leaves the newly sorted element alone)
+	while (n > 0) 
+	{
+        // Swap the root with the last element
+		swap(&A[0], &A[n-1]);
+		n--;
+		heapify(A, 0, n);
+	}
 }
 
 /**
@@ -35,7 +38,23 @@ void heapSort(Employee *A, int n)
  */
 void buildHeap(Employee *A, int n)
 {
-	// TODO - heapify() every element from A[n/2] down-to A[0]
+	// Start from the last non-leaf node and heapify each node in reverse order
+	for (int i = n / 2 - 1; i >= 0; i--)
+	{
+		heapify(A, i, n);
+	}
+}
+
+// get the index of the left child of element i
+int left_child(int i)
+{
+    return 2 * i + 1;
+}
+
+// get the index of the right child of element i
+int right_child(int i)
+{
+    return 2 * i + 2;
 }
 
 /**
@@ -48,15 +67,26 @@ void buildHeap(Employee *A, int n)
  */
 void heapify(Employee *A, int i, int n)
 {
-	// TODO - get index of left child of element i
-	// TODO - get index of right child of element i
+	int left = left_child(i);
+	int right = right_child(i);
+	int smaller = i;
 
-	// TODO - determine which child has a smaller salary. We'll call the index of this
-	//		element: "smaller"
+    // Find the index of the smallest element among the current node, left child, and right child
+	if (left < n && A[left].salary < A[smaller].salary)
+	{
+		smaller = left;
+	}
+	if (right < n && A[right].salary < A[smaller].salary)
+    {
+        smaller = right;
+    }
 
-	// TODO - recursively check if the salary at A[i] > the salary at A[smaller]. If it is, swap the two.
-	//			Then recursively heapify A[smaller].
-	// TODO - Continue recursion as long as i is within range AND either right_child and left_child are still within range.
+	// If the smallest element is not the current node, swap them and recursively heapify
+	if (smaller != i)
+	{
+		swap(&A[i], &A[smaller]);
+		heapify(A, smaller, n);
+	}
 }
 
 /**
@@ -66,7 +96,9 @@ void heapify(Employee *A, int i, int n)
  */
 void swap(Employee *e1, Employee *e2)
 {
-	// TODO
+	Employee temp = *e1;
+	*e1 = *e2;
+	*e2 = temp;
 }
 
 /**
@@ -76,5 +108,14 @@ void swap(Employee *e1, Employee *e2)
  */
 void printList(Employee *A, int n)
 {
-	// TODO
+	printf("[");
+	for (int i = 0; i < n; i++)
+	{
+		printf("id=%s sal=%.2d", A[i].name, A[i].salary);
+        if (i < n - 1)
+        {
+            printf(" ");
+        }
+	}
+	printf("]\n");
 }
